@@ -1,0 +1,20 @@
+<html>
+
+<head>
+<title>Delete - {{highlight.name}}</title>
+</head>
+
+<body>
+<form action= "{{url_for('deleteHighlightDescription', country_name=country.name, highlight_id = highlight.id)}}" method = 'POST'>
+<div class='pane'>
+<h3>Are you sure you want to delete {{country.name}} - {{highlight.name}}</h3>
+
+<p>{{highlight.description}}</p>
+<input type='submit' value='Delete'>
+
+</div>
+</form>
+<a href= '{{url_for('highlightDescription', country_name=country.name, highlight_id = highlight.id)}}'>Cancel</a>
+</body>
+
+</html>

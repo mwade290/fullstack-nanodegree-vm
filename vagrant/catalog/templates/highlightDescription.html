@@ -1,0 +1,21 @@
+<html>
+
+<head>
+<title>{{highlight.name}} - Description</title>
+</head>
+
+
+<body>
+<div class='pane'>
+<h1>{{country.name}} - {{highlight.name}}</h1>
+
+<p>{{highlight.description}}</p>
+<a href="{{url_for('editHighlightDescription', 
+	country_name=country.name, highlight_id=highlight.id)}}">Edit</a>
+<a href="{{url_for('deleteHighlightDescription', 
+	country_name=country.name, highlight_id=highlight.id)}}">Delete</a>
+
+</div>
+</body>
+
+</html>

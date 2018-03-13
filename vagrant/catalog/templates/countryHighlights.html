@@ -1,0 +1,25 @@
+<html>
+
+<head>
+<title>{{country.name}} - Highlights</title>
+</head>
+
+
+<body>
+<div class='pane'>
+<h1>{{country.name}} - Highlights</h1>
+
+<ol>
+{% for highlight in highlights %}
+
+<li><a href="{{url_for('highlightDescription', 
+	country_name=country.name, highlight_id=highlight.id)}}">
+	{{highlight.name}}</a></li>
+
+{% endfor %}
+</ol>
+
+</div>
+</body>
+
+</html>
