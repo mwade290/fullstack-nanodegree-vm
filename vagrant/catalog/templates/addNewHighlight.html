@@ -1,0 +1,21 @@
+<html>
+
+<head>
+<title>Add New Highlight</title>
+</head>
+
+<body>
+<form action= "{{url_for('addNewHighlight', country_name=country.name)}}" method = 'POST'>
+<div class='pane'>
+<h1>Add New Highlight</h1>
+
+<input name='name' type='text'>
+<textarea name='description' rows='5' cols='40'></textarea>
+<input type='submit' value='Add'>
+
+</div>
+</form>
+<a href= '{{url_for('countryHighlights', country_name=country.name)}}'>Cancel</a>
+</body>
+
+</html>

@@ -32,24 +32,54 @@ def countryHighlights(country_name):
 		country_id=country.id).all()
 	return render_template('countryHighlights.html', highlights=highlights, country=country)
 	
+# Add new country
+@app.route('/countries/add', 
+		   methods=['GET', 'POST'])
+def addNewCountry():
+	if request.method == 'POST':
+		country = Country(name=request.form['name'])
+		session.add(country)
+		session.commit()
+		return redirect(url_for('countries'))
+	else:
+		return render_template('addNewCountry.html')
+	
 # Show description for highlight
-@app.route('/countries/<country_name>/highlights/<int:highlight_id>/description')
-def highlightDescription(country_name, highlight_id):
+@app.route('/countries/<country_name>/highlights/<highlight_name>/description')
+def highlightDescription(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
-		id=highlight_id).first()
+		name=highlight_name).first()
 	if country > 0 and highlight > 0:
 		return render_template('highlightDescription.html', highlight=highlight, country=country)
 	else:
 		return error()
 		
+# Add new highlight
+@app.route('/countries/<country_name>/highlights/add', 
+		   methods=['GET', 'POST'])
+def addNewHighlight(country_name):
+	country = session.query(Country).filter_by(name=country_name).first()
+	if country > 0:
+		if request.method == 'POST':
+			highlight = Highlight(name=request.form['name'],
+				description=request.form['description'],
+				country_id=country.id)
+			session.add(highlight)
+			session.commit()
+			return redirect(url_for('countryHighlights', country_name=country.name))
+		else:
+			return render_template('addNewHighlight.html', country=country)
+	else:
+		return error()
+		
 # Edit highlight description
-@app.route('/countries/<country_name>/highlights/<int:highlight_id>/description/edit',
+@app.route('/countries/<country_name>/highlights/<highlight_name>/description/edit',
            methods=['GET', 'POST'])
-def editHighlightDescription(country_name, highlight_id):
+def editHighlightDescription(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
-		id=highlight_id).first()
+		name=highlight_name).first()
 	if country > 0 and highlight > 0:
 		if request.method == 'POST':
 			if request.form['name']:
@@ -58,19 +88,19 @@ def editHighlightDescription(country_name, highlight_id):
 				highlight.description = request.form['description']
 			session.add(highlight)
 			session.commit()
-			return redirect(url_for('highlightDescription', highlight_id=highlight.id, country_name=country.name))
+			return redirect(url_for('highlightDescription', highlight_name=highlight.name, country_name=country.name))
 		else:
 			return render_template('editHighlightDescription.html', highlight=highlight, country=country)
 	else:
 		return error()
 		
 # Delete highlight description
-@app.route('/countries/<country_name>/highlights/<int:highlight_id>/description/delete',
+@app.route('/countries/<country_name>/highlights/<highlight_name>/description/delete',
            methods=['GET', 'POST'])
-def deleteHighlightDescription(country_name, highlight_id):
+def deleteHighlightDescription(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
-		id=highlight_id).first()
+		name=highlight_name).first()
 	if country > 0 and highlight > 0:
 		if request.method == 'POST':
 			session.delete(highlight)

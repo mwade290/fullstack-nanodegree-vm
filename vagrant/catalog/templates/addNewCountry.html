@@ -1,0 +1,20 @@
+<html>
+
+<head>
+<title>Add New Country</title>
+</head>
+
+<body>
+<form action= "{{url_for('addNewCountry')}}" method = 'POST'>
+<div class='pane'>
+<h1>Add New Country</h1>
+
+<input name='name' type='text'>
+<input type='submit' value='Add'>
+
+</div>
+</form>
+<a href= '{{url_for('countries')}}'>Cancel</a>
+</body>
+
+</html>

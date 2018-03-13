@@ -6,7 +6,7 @@
 
 
 <body>
-<form action= "{{url_for('editHighlightDescription', country_name=country.name, highlight_id = highlight.id)}}" method = 'POST'>
+<form action= "{{url_for('editHighlightDescription', country_name=country.name, highlight_name=highlight.name)}}" method = 'POST'>
 <div class='pane'>
 <input name='name' type='text' value='{{highlight.name}}'></input>
 
@@ -15,7 +15,7 @@
 
 </div>
 </form>
-<a href= '{{url_for('highlightDescription', country_name=country.name, highlight_id = highlight.id)}}'>Cancel</a>
+<a href= '{{url_for('highlightDescription', country_name=country.name, highlight_name=highlight.name)}}'>Cancel</a>
 </body>
 
 </html>

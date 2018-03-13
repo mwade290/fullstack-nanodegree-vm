@@ -9,11 +9,13 @@
 <div class='pane'>
 <h1>{{country.name}} - Highlights</h1>
 
+<h3><a href="{{url_for('addNewHighlight', country_name=country.name)}}">Add New</a></h3>
+
 <ol>
 {% for highlight in highlights %}
 
 <li><a href="{{url_for('highlightDescription', 
-	country_name=country.name, highlight_id=highlight.id)}}">
+	country_name=country.name, highlight_name=highlight.name)}}">
 	{{highlight.name}}</a></li>
 
 {% endfor %}
