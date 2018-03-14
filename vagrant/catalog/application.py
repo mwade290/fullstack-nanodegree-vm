@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect, jsonify, url_for
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Country, Highlight
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key'
 
 engine = create_engine('sqlite:///countries.db')
 Base.metadata.bind = engine
@@ -14,8 +15,8 @@ session = DBSession()
 # Show all countries in serialised format
 @app.route('/countries/JSON')
 def countriesJSON():
-    countries = session.query(Country).all()
-    return jsonify(countries=[c.serialize for c in countries])
+	countries = session.query(Country).all()
+	return jsonify(countries=[c.serialize for c in countries])
 	
 # Show all countries
 @app.route('/')
@@ -37,21 +38,22 @@ def countryHighlights(country_name):
 		   methods=['GET', 'POST'])
 def addNewCountry():
 	if request.method == 'POST':
-		countries = session.query(Country).all()
-		country = Country(name=request.form['name'])
-		#flash(country.name)
-		for attr, value in session.query(Country).all():
-			print attr, value
-		# if (country not in countries):
-			# session.add(country)
-			# session.commit()
-			# flash('Added!')
-			# return redirect(url_for('countries'))
-		# else:
-			# flash('Country already exists!')
-			# return render_template('addNewCountry.html')
+		newName = request.form['name']
+		if (addCountryConditions(newName)):
+			country = Country(name=newName)
+			session.add(country)
+			session.commit()
+			return redirect(url_for('countries'))
+		else:
+			message = 'test'
+			return render_template('error.html', message)
+			#return error('Country already exists')
 	else:
 		return render_template('addNewCountry.html')
+		
+# Perform checks to ensure country name integrity
+def addCountryConditions(name):
+	exists = session.query(Country.id).filter_by(name=name).scalar() is not None
 	
 # Show description for highlight
 @app.route('/countries/<country_name>/highlights/<highlight_name>/description')
@@ -62,7 +64,7 @@ def highlightDescription(country_name, highlight_name):
 	if country > 0 and highlight > 0:
 		return render_template('highlightDescription.html', highlight=highlight, country=country)
 	else:
-		return error()
+		return error('')
 		
 # Add new highlight
 @app.route('/countries/<country_name>/highlights/add', 
@@ -80,7 +82,7 @@ def addNewHighlight(country_name):
 		else:
 			return render_template('addNewHighlight.html', country=country)
 	else:
-		return error()
+		return error('')
 		
 # Edit highlight description
 @app.route('/countries/<country_name>/highlights/<highlight_name>/description/edit',
@@ -101,7 +103,7 @@ def editHighlightDescription(country_name, highlight_name):
 		else:
 			return render_template('editHighlightDescription.html', highlight=highlight, country=country)
 	else:
-		return error()
+		return error('')
 		
 # Delete highlight description
 @app.route('/countries/<country_name>/highlights/<highlight_name>/description/delete',
@@ -121,12 +123,12 @@ def deleteHighlightDescription(country_name, highlight_name):
 		else:
 			return render_template('deleteHighlightDescription.html', highlight=highlight, country=country)
 	else:
-		return error()
+		return error('')
 
 @app.route('/error', strict_slashes=False)		
-def error():
-	return render_template('error.html')
+def error(message):
+	return render_template('error.html', 'test')
 	
 if __name__ == '__main__':
-    app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+	app.debug = True
+	app.run(host='0.0.0.0', port=8000)
