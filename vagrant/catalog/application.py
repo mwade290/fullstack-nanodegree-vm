@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Country, Highlight
@@ -37,10 +37,19 @@ def countryHighlights(country_name):
 		   methods=['GET', 'POST'])
 def addNewCountry():
 	if request.method == 'POST':
+		countries = session.query(Country).all()
 		country = Country(name=request.form['name'])
-		session.add(country)
-		session.commit()
-		return redirect(url_for('countries'))
+		#flash(country.name)
+		for attr, value in session.query(Country).all():
+			print attr, value
+		# if (country not in countries):
+			# session.add(country)
+			# session.commit()
+			# flash('Added!')
+			# return redirect(url_for('countries'))
+		# else:
+			# flash('Country already exists!')
+			# return render_template('addNewCountry.html')
 	else:
 		return render_template('addNewCountry.html')
 	
