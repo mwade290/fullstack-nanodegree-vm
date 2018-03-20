@@ -54,9 +54,9 @@ def addNewCountry():
 def addCountryConditions(name):
 	exists = session.query(Country.id).filter_by(name=name).scalar() is not None
 	if (exists):
-		return 'Cannot add Country, name already exists.'
+		return 'Country name already exists.'
 	elif (name == ''):
-		return 'Cannot add Country, name cannot be blank.'
+		return 'Country name cannot be blank.'
 	else:
 		return ''
 	
@@ -99,9 +99,9 @@ def addHighlightConditions(country, name):
 	exists = session.query(Highlight).filter_by(country_id=country.id,
 		name=name).scalar() is not None
 	if (exists):
-		return 'Cannot add Highlight, name already exists.'
+		return 'Highlight name already exists.'
 	elif (name == ''):
-		return 'Cannot add Highlight, name cannot be blank.'
+		return 'Highlight name cannot be blank.'
 	else:
 		return ''
 		
@@ -114,13 +114,16 @@ def editHighlightDescription(country_name, highlight_name):
 		name=highlight_name).first()
 	if country > 0 and highlight > 0:
 		if request.method == 'POST':
-			if request.form['name']:
+			newName = request.form['name']
+			message = addHighlightConditions(country, newName)
+			if (message == ''):
 				highlight.name = request.form['name']
-			if request.form['description']:
 				highlight.description = request.form['description']
-			session.add(highlight)
-			session.commit()
-			return redirect(url_for('highlightDescription', highlight_name=highlight.name, country_name=country.name))
+				session.add(highlight)
+				session.commit()
+				return redirect(url_for('highlightDescription', highlight_name=highlight.name, country_name=country.name))
+			else:
+				return error(message)
 		else:
 			return render_template('editHighlightDescription.html', highlight=highlight, country=country)
 	else:

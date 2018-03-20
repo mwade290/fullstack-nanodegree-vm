@@ -1,13 +1,6 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-<title>Countries</title>
-</head>
-
-
-<body>
-<div class='pane'>
-<h1>Countries</h1>
+{% block content %}
 
 <h3><a href="{{url_for('addNewCountry')}}">Add New</a></h3>
 
@@ -20,7 +13,4 @@
 {% endfor %}
 </ol>
 
-</div>
-</body>
-
-</html>
+{% endblock %}
