@@ -1,27 +1,21 @@
-<html>
+{% extends "countries.html" %}
+{% block title %}{{country.name}} - Highlights{% endblock %}
 
-<head>
-<title>{{country.name}} - Highlights</title>
-</head>
-
-
-<body>
+{% block content %}
 <div class='pane'>
-<h1>{{country.name}} - Highlights</h1>
+	<h1>{{country.name}} - Highlights</h1>
 
-<h3><a href="{{url_for('addNewHighlight', country_name=country.name)}}">Add New</a></h3>
+	<a href="{{url_for('addNewHighlight', country_name=country.name)}}">Add New</a>
+	<a href="{{url_for('deleteCountry', country_name=country.name)}}">Delete</a>
 
-<ol>
-{% for highlight in highlights %}
+	<ol>
+	{% for highlight in highlights %}
 
-<li><a href="{{url_for('highlightDescription', 
-	country_name=country.name, highlight_name=highlight.name)}}">
-	{{highlight.name}}</a></li>
+	<li><a href="{{url_for('highlightDescription', 
+		country_name=country.name, highlight_name=highlight.name)}}">
+		{{highlight.name}}</a></li>
 
-{% endfor %}
-</ol>
-
+	{% endfor %}
+	</ol>
 </div>
-</body>
-
-</html>
+{% endblock %} 

@@ -1,0 +1,55 @@
+body {
+	overflow-x: hidden;
+	padding-top: 74px;
+}
+
+.navbar-brand {
+	font-size: 2em;
+}
+
+.sidebar-wrapper {
+ 	position: fixed;
+	top: 75px;
+	bottom: 0;
+	z-index: 1000;
+	overflow-y: auto;
+	background: #ddd;
+	border-right: 1px solid #eee;
+}
+
+.sidebar-nav {
+	position: relative;
+	min-width: 200px;
+	max-width: 200px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sidebar-nav>.sidebar-brand {
+	height: 65px;
+	font-size: 1.5em;
+	line-height: 60px;
+}
+
+.sidebar-nav li {
+	text-indent: 20px;
+	line-height: 30px;
+}
+
+.sidebar-nav li a {
+	display: block;
+	text-decoration: none;
+}
+
+.sidebar-add {
+	display: block;
+	color: red;
+	font-weight: bold;
+}
+
+.content-wrapper {
+	position: relative;
+	left: 200px;
+	padding: 10px 20px;
+}

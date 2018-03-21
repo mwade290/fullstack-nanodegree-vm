@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import sys
+sys.path.insert(0, 'Modules')
 from database_setup import Base, Country, Highlight
 
 app = Flask(__name__)
@@ -15,23 +17,24 @@ session = DBSession()
 # Show all countries in serialised format
 @app.route('/countries/JSON')
 def countriesJSON():
-	countries = session.query(Country).all()
+	countries = session.query(Country).order_by(Country.name).all()
 	return jsonify(countries=[c.serialize for c in countries])
 	
 # Show all countries
 @app.route('/')
-@app.route('/countries/', strict_slashes=False)
+@app.route('/countries')
 def countries():
-	countries = session.query(Country).all()
+	countries = session.query(Country).order_by(Country.name).all()
 	return render_template('countries.html', countries=countries)
 	
 # Show all country highlights
 @app.route('/countries/<country_name>/highlights')
 def countryHighlights(country_name):
+	countries = session.query(Country).order_by(Country.name).all()
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlights = session.query(Highlight).filter_by(
 		country_id=country.id).all()
-	return render_template('countryHighlights.html', highlights=highlights, country=country)
+	return render_template('countryHighlights.html', countries=countries, highlights=highlights, country=country)
 	
 # Add new country
 @app.route('/countries/add', 
@@ -48,7 +51,24 @@ def addNewCountry():
 		else:
 			return error(message)
 	else:
-		return render_template('addNewCountry.html')
+		countries = session.query(Country).order_by(Country.name).all()
+		return render_template('addNewCountry.html', countries=countries)
+		
+# Delete country
+@app.route('/countries/<country_name>/delete', 
+		   methods=['GET', 'POST'])
+def deleteCountry(country_name):
+	country = session.query(Country).filter_by(name=country_name).first()
+	if country > 0:
+		if request.method == 'POST':
+			session.delete(country)
+			session.commit()
+			return redirect(url_for('countries'))
+		else:
+			countries = session.query(Country).order_by(Country.name).all()
+			return render_template('deleteCountry.html', countries=countries, country=country)
+	else:
+		return error('Unable to find entry in database.')
 		
 # Perform checks to ensure country name integrity
 def addCountryConditions(name):
@@ -67,7 +87,8 @@ def highlightDescription(country_name, highlight_name):
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
 		name=highlight_name).first()
 	if country > 0 and highlight > 0:
-		return render_template('highlightDescription.html', highlight=highlight, country=country)
+		countries = session.query(Country).order_by(Country.name).all()
+		return render_template('highlightDescription.html', countries=countries, highlight=highlight, country=country)
 	else:
 		return error('Unable to find entry in database.')
 		
@@ -90,7 +111,8 @@ def addNewHighlight(country_name):
 			else:
 				return error(message)
 		else:
-			return render_template('addNewHighlight.html', country=country)
+			countries = session.query(Country).order_by(Country.name).all()
+			return render_template('addNewHighlight.html', countries=countries, country=country)
 	else:
 		return error('Unable to find Country in database.')
 
@@ -125,7 +147,8 @@ def editHighlightDescription(country_name, highlight_name):
 			else:
 				return error(message)
 		else:
-			return render_template('editHighlightDescription.html', highlight=highlight, country=country)
+			countries = session.query(Country).order_by(Country.name).all()
+			return render_template('editHighlightDescription.html', countries=countries, highlight=highlight, country=country)
 	else:
 		return error('Unable to find entry in database.')
 		
@@ -145,13 +168,15 @@ def deleteHighlightDescription(country_name, highlight_name):
 				session.delete(country)
 			return redirect(url_for('countries'))
 		else:
-			return render_template('deleteHighlightDescription.html', highlight=highlight, country=country)
+			countries = session.query(Country).order_by(Country.name).all()
+			return render_template('deleteHighlightDescription.html', countries=countries, highlight=highlight, country=country)
 	else:
 		return error('Unable to find entry in database.')
 
-@app.route('/error', strict_slashes=False)		
+@app.route('/error')		
 def error(message):
-	return render_template('error.html', message=message)
+	countries = session.query(Country).order_by(Country.name).all()
+	return render_template('error.html', countries=countries, message=message)
 	
 if __name__ == '__main__':
 	app.debug = True

@@ -1,21 +1,15 @@
-<html>
+{% extends "countries.html" %}
+{% block title %}Edit - {{highlight.name}}{% endblock %}
 
-<head>
-<title>Edit - {{highlight.name}}</title>
-</head>
+{% block content %}
 
-
-<body>
 <form action= "{{url_for('editHighlightDescription', country_name=country.name, highlight_name=highlight.name)}}" method = 'POST'>
 <div class='pane'>
-<input name='name' type='text' value='{{highlight.name}}'></input>
+	<input name='name' type='text' value='{{highlight.name}}'></input>
 
-<textarea name='description' rows='5' cols='40'>{{highlight.description }}</textarea>
-<input type='submit' value='Edit'>
-
+	<textarea name='description' rows='5' cols='40'>{{highlight.description }}</textarea>
+	<input type='submit' value='Edit'>
 </div>
 </form>
-<a href= '{{url_for('highlightDescription', country_name=country.name, highlight_name=highlight.name)}}'>Cancel</a>
-</body>
-
-</html>
+<a href= "{{url_for('highlightDescription', country_name=country.name, highlight_name=highlight.name)}}">Cancel</a>
+{% endblock %} 

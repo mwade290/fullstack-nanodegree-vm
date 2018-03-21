@@ -1,10 +1,7 @@
-<html>
+{% extends "countries.html" %}
+{% block title %}Add New Country{% endblock %}
 
-<head>
-<title>Add New Country</title>
-</head>
-
-<body>
+{% block content %}
 <form action= "{{url_for('addNewCountry')}}" method = 'POST'>
 <div class='pane'>
 <h1>Add New Country</h1>
@@ -14,7 +11,5 @@
 
 </div>
 </form>
-<a href= '{{url_for('countries')}}'>Cancel</a>
-</body>
-
-</html>
+<a href="{{url_for('countries')}}">Cancel</a>
+{% endblock %} 

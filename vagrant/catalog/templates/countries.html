@@ -1,16 +1,48 @@
-{% extends 'base.html' %}
-
-{% block content %}
-
-<h3><a href="{{url_for('addNewCountry')}}">Add New</a></h3>
-
-<ol>
-{% for country in countries %}
-
-<li><a href="{{url_for('countryHighlights', country_name=country.name )}}">
-	{{country.name}}</a></li>
-
-{% endfor %}
-</ol>
-
-{% endblock %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Catalog App | {% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+	<link rel="stylesheet" href="/static/css/site.css">
+  </head>
+  <body>
+	<div class="navbar-wrapper">
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+			<a class="navbar-brand" href="/">Catalog App</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
+			  <span class="navbar-toggler-icon"></span>
+			</button>
+			<div id="navbarNavDropdown" class="navbar-collapse collapse">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="#">Sign Up</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Login</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+	<div class="sidebar-wrapper">
+		<ul class="sidebar-nav">
+			<li class="sidebar-brand">Countries	</li>
+			<li>
+				<a class="sidebar-add" href="{{url_for('addNewCountry')}}">Add New</a>
+			</li>
+			{% for country in countries %}
+			<li>
+				<a href="{{url_for('countryHighlights', country_name=country.name )}}">{{country.name}}</a>
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div class="content-wrapper">
+		{% block content %}
+		<h1>Select a country from the sidebar.</h1>
+		{% endblock %} 
+    </div>
+  </body>
+</html>
