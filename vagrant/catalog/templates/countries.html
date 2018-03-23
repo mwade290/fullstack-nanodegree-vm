@@ -48,8 +48,18 @@
 	</div>
 	<div class="content-wrapper">
 		{% block content %}
-		<h1>Select a country from the sidebar.</h1>
-		{% endblock %} 
+		<h1>Select from the sidebar or <a href="{{url_for('addNewCountry')}}">Add A New Country</a>.</h1>
+		<h3>Latest Items</h3>
+		<ul class="latest-items">
+			{% for highlight in highlights|sort(reverse=True, attribute='id') %}
+			{% if loop.index < 11 %}
+			<li>
+				<a href="{{url_for('highlightDescription', country_name=highlight.country.name, highlight_name=highlight.name )}}">{{highlight.name}}</a>
+			</li>
+			{% endif %}
+			{% endfor %}
+		</ul>
+		{% endblock %}
 	</div>
   </body>
 </html>

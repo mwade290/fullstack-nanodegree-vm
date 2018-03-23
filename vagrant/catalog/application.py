@@ -169,7 +169,8 @@ def countriesJSON():
 @app.route('/countries')
 def countries():
 	countries = session.query(Country).order_by(Country.name).all()
-	return render_template('countries.html', countries=countries, session=login_session)
+	highlights = session.query(Highlight).all()
+	return render_template('countries.html', countries=countries, highlights=highlights, session=login_session)
 
 # Show all country highlights in serialised format
 @app.route('/countries/<country_name>/highlights/JSON')
@@ -265,7 +266,7 @@ def addNewHighlight(country_name):
 	if country > 0:
 		if request.method == 'POST':
 			newName = request.form['name']
-			message = addHighlightConditions(country, newName)
+			message = addHighlightConditions(country, newName, False)
 			if (message == ''):
 				highlight = Highlight(name=newName,
 					description=request.form['description'],
@@ -282,10 +283,10 @@ def addNewHighlight(country_name):
 		return error('Unable to find Country in database.')
 
 # Perform checks to ensure highlight name integrity
-def addHighlightConditions(country, name):
+def addHighlightConditions(country, name, edit):
 	exists = session.query(Highlight).filter_by(country_id=country.id,
 		name=name).scalar() is not None
-	if (exists):
+	if (exists and not edit):
 		return 'Highlight name already exists.'
 	elif (name == ''):
 		return 'Highlight name cannot be blank.'
@@ -302,7 +303,7 @@ def editHighlightDescription(country_name, highlight_name):
 	if country > 0 and highlight > 0:
 		if request.method == 'POST':
 			newName = request.form['name']
-			message = addHighlightConditions(country, newName)
+			message = addHighlightConditions(country, newName, True)
 			if (message == ''):
 				highlight.name = request.form['name']
 				highlight.description = request.form['description']
