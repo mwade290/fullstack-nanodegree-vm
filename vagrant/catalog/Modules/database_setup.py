@@ -8,18 +8,28 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+class User(Base):
+	__tablename__ = 'user'
+
+	id = Column(Integer, primary_key=True)
+	username = Column(String(250), nullable=False)
+	email = Column(String(250), nullable=False)
+	picture = Column(String(250))
+
 class Country(Base):
-    __tablename__ = 'country'
+	__tablename__ = 'country'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
+	id = Column(Integer, primary_key=True)
+	name = Column(String(50), nullable=False)
+	user_id = Column(Integer, ForeignKey('user.id'))
+	user = relationship(User)
 
-    @property
-    def serialize(self):
-        return {
-            'name': self.name,
-            'id': self.id,
-        }
+	@property
+	def serialize(self):
+		return {
+			'name': self.name,
+			'id': self.id,
+		}
 
 class Highlight(Base):
     __tablename__ = 'highlight'
@@ -29,6 +39,8 @@ class Highlight(Base):
     description = Column(String(convert_unicode=True), nullable=False)
     country_id = Column(Integer, ForeignKey('country.id'))
     country = relationship(Country)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):

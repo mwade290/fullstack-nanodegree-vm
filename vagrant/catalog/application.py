@@ -11,7 +11,7 @@ import httplib2
 import json
 import requests
 sys.path.insert(0, 'Modules')
-from database_setup import Base, Country, Highlight
+from database_setup import Base, User, Country, Highlight
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
@@ -37,6 +37,12 @@ def showLogin():
 # Logout
 @app.route('/logout')
 def disconnect():
+	# del login_session['access_token']
+	# del login_session['gplus_id']
+	# del login_session['username']
+	# del login_session['email']
+	# del login_session['picture']
+	# del login_session['id']
 	if 'username' in login_session:
 		gdisconnect()
 		flash("Log out successful")
@@ -44,6 +50,13 @@ def disconnect():
 		flash("You were not logged in.")
 	return redirect(url_for('countries'))
 
+def createUser(login_session):
+	newUser = User(name=login_session['username'], email=login_session[
+		'email'], picture=login_session['picture'])
+	session.add(newUser)
+	session.commit()
+	user = session.query(User).filter_by(email=login_session['email']).first()
+	return user.id
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -112,20 +125,25 @@ def gconnect():
 	login_session['username'] = data['name']
 	login_session['picture'] = data['picture']
 	login_session['email'] = data['email']
+	
+	user = session.query(User).filter_by(email=login_session['email']).first()
+	if user is None:
+		login_session['id'] = createUser(login_session)
+	else:
+		login_session['id'] = user.id
 
 	output = ''
 	output += '<h1>Welcome, '
 	output += login_session['username']
 	output += '!</h1>'
-	#output += '<img src="'
-	#output += login_session['picture']
-	#output += ' " style = "width: 300px; height: 300px;border-radius:
-	#150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+	output += '<img src="'
+	output += login_session['picture']
+	output += ' " style = "width: 300px; height: 300px;border-radius:150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
 	flash("you are now logged in as %s" % login_session['username'])
 	print("done!")
 	return output
 
-	# DISCONNECT - Revoke a current user's token and reset their login_session
+# DISCONNECT - Revoke a current user's token and reset their login_session
 @app.route('/gdisconnect', methods=['POST'])
 def gdisconnect():
 	access_token = login_session.get('access_token')
@@ -148,6 +166,7 @@ def gdisconnect():
 		del login_session['username']
 		del login_session['email']
 		del login_session['picture']
+		del login_session['id']
 		response = make_response(json.dumps('Successfully disconnected.'), 200)
 		response.headers['Content-Type'] = 'application/json'
 		flash("Successfully disconnected.")
@@ -193,9 +212,10 @@ def countryHighlights(country_name):
 def addNewCountry():
 	if request.method == 'POST':
 		newName = request.form['name']
-		message = addCountryConditions(newName)
+		message = addCountryConditions(newName, False)
 		if (message == ''):
-			country = Country(name=newName)
+			user_var = session.query(User).filter_by(id=login_session['id']).first()
+			country = Country(name=newName, user=user_var)
 			session.add(country)
 			session.commit()
 			return redirect(url_for('countryHighlights', country_name=country.name))
@@ -205,19 +225,46 @@ def addNewCountry():
 		countries = session.query(Country).order_by(Country.name).all()
 		return render_template('addNewCountry.html', countries=countries)
 		
+# Edit Country name
+@app.route('/countries/<country_name>/edit',
+		   methods=['GET', 'POST'])
+def editCountry(country_name):
+	country = session.query(Country).filter_by(name=country_name).first()
+	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
+	if country is not None:
+		if request.method == 'POST':
+			newName = request.form['name']
+			message = addCountryConditions(country.name, True)
+			if (message == ''):
+				country.name = newName
+				session.add(country)
+				session.commit()
+				return redirect(url_for('countries'))
+			else:
+				return error(message)
+		else:
+			countries = session.query(Country).order_by(Country.name).all()
+			return render_template('editCountry.html', countries=countries, country=country)
+	else:
+		return error('Unable to find entry in database.')
+		
 # Delete country
 @app.route('/countries/<country_name>/delete', 
 		   methods=['GET', 'POST'])
 def deleteCountry(country_name):
 	country = session.query(Country).filter_by(name=country_name).first()
-	if country > 0:
+	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
+	if country is not None:
 		if request.method == 'POST':
-			highlights = session.query(Highlight).filter_by(country_id=country.id).all()
-			for highlight in highlights:
-				session.delete(highlight)
-			session.delete(country)
-			session.commit()
-			return redirect(url_for('countries'))
+			if user_var is not None and user_var.id == country.user.id:
+				highlights = session.query(Highlight).filter_by(country_id=country.id).all()
+				for highlight in highlights:
+					session.delete(highlight)
+				session.delete(country)
+				session.commit()
+				return redirect(url_for('countries'))
+			else:
+				return error('You do not have permission to delete this Country.')
 		else:
 			countries = session.query(Country).order_by(Country.name).all()
 			return render_template('deleteCountry.html', countries=countries, country=country)
@@ -225,12 +272,18 @@ def deleteCountry(country_name):
 		return error('Unable to find entry in database.')
 		
 # Perform checks to ensure country name integrity
-def addCountryConditions(name):
-	exists = session.query(Country.id).filter_by(name=name).scalar() is not None
-	if (exists):
+def addCountryConditions(name, edit):
+	exists = session.query(Country.id).filter_by(name=name).first()
+	if (exists is not None and not edit):
 		return 'Country name already exists.'
 	elif (name == ''):
 		return 'Country name cannot be blank.'
+	elif (edit and login_session.get('id') is None):
+		return 'You must login to edit a Country'
+	elif (login_session.get('id') is None):
+		return 'You must login to add a Country'
+	elif (edit and login_session.get('id') != exists.user.id):
+		return 'You do not have permission to delete this Country.'
 	else:
 		return ''
 	
@@ -240,7 +293,7 @@ def highlightDescriptionJSON(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
 		name=highlight_name).first()
-	if country > 0 and highlight > 0:
+	if country is not None and highlight is not None:
 		countries = session.query(Country).order_by(Country.name).all()
 		return jsonify(highlight=highlight.serialize)
 	else:
@@ -263,14 +316,16 @@ def highlightDescription(country_name, highlight_name):
 		   methods=['GET', 'POST'])
 def addNewHighlight(country_name):
 	country = session.query(Country).filter_by(name=country_name).first()
-	if country > 0:
+	if country is not None:
 		if request.method == 'POST':
 			newName = request.form['name']
-			message = addHighlightConditions(country, newName, False)
+			message = addHighlightConditions(country, '', newName, False)
 			if (message == ''):
+				user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 				highlight = Highlight(name=newName,
 					description=request.form['description'],
-					country_id=country.id)
+					country_id=country.id,
+					user=user_var)
 				session.add(highlight)
 				session.commit()
 				return redirect(url_for('countryHighlights', country_name=country.name))
@@ -283,13 +338,19 @@ def addNewHighlight(country_name):
 		return error('Unable to find Country in database.')
 
 # Perform checks to ensure highlight name integrity
-def addHighlightConditions(country, name, edit):
+def addHighlightConditions(country, oldName, name, edit):
 	exists = session.query(Highlight).filter_by(country_id=country.id,
-		name=name).scalar() is not None
-	if (exists and not edit):
+		name=oldName).first()
+	if (exists is not None and not edit):
 		return 'Highlight name already exists.'
 	elif (name == ''):
 		return 'Highlight name cannot be blank.'
+	elif (edit and login_session.get('id') is None):
+		return 'You must login to edit a Highlight'
+	elif (login_session.get('id') is None):
+		return 'You must login to add a Highlight'
+	elif (edit and login_session.get('id') != exists.user.id):
+		return 'You do not have permission to delete this Highlight.'
 	else:
 		return ''
 		
@@ -300,10 +361,11 @@ def editHighlightDescription(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
 		name=highlight_name).first()
-	if country > 0 and highlight > 0:
+	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
+	if country is not None and highlight is not None:
 		if request.method == 'POST':
 			newName = request.form['name']
-			message = addHighlightConditions(country, newName, True)
+			message = addHighlightConditions(country, highlight_name, newName, True)
 			if (message == ''):
 				highlight.name = request.form['name']
 				highlight.description = request.form['description']
@@ -325,14 +387,18 @@ def deleteHighlightDescription(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
 		name=highlight_name).first()
-	if country > 0 and highlight > 0:
+	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
+	if country is not None and highlight is not None:
 		if request.method == 'POST':
-			session.delete(highlight)
-			session.commit()
-			count = session.query(Highlight).filter_by(country_id=country.id).count()
-			if count < 1:
-				session.delete(country)
-			return redirect(url_for('countries'))
+			if user_var == highlight.user.id:
+				session.delete(highlight)
+				session.commit()
+				count = session.query(Highlight).filter_by(country_id=country.id).count()
+				if count < 1 and user_var.id == country.user.id:
+					session.delete(country)
+				return redirect(url_for('countries'))
+			else:
+				return error('You do not have permission to delete this Highlight.')
 		else:
 			countries = session.query(Country).order_by(Country.name).all()
 			return render_template('deleteHighlightDescription.html', countries=countries, highlight=highlight, country=country)

@@ -1,0 +1,13 @@
+{% extends "countries.html" %}
+{% block title %}Edit - {{country.name}}{% endblock %}
+
+{% block content %}
+
+<form action= "{{url_for('editCountry', country_name=country.name)}}" method = 'POST'>
+<div class='pane'>
+	<input name='name' type='text' value='{{country.name}}'></input>
+	<input type='submit' value='Edit'>
+</div>
+</form>
+<a href= "{{url_for('countries')}}">Cancel</a>
+{% endblock %} 
