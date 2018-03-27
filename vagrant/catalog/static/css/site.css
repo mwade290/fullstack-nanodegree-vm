@@ -42,7 +42,7 @@ body {
 	text-decoration: none;
 }
 
-.sidebar-add {
+.sidebar-add, .highlight-add {
 	display: block;
 	color: red;
 	font-weight: bold;
@@ -56,4 +56,13 @@ body {
 
 .latest-items {
 	list-style: none;
+}
+
+.edit-country, .edit-highlight {
+	padding-bottom: 10px;
+}
+
+.highlight-list {
+	list-style: none;
+	padding-left: 0;
 }

@@ -203,7 +203,7 @@ def countryHighlightsJSON(country_name):
 def countryHighlights(country_name):
 	countries = session.query(Country).order_by(Country.name).all()
 	country = session.query(Country).filter_by(name=country_name).first()
-	highlights = session.query(Highlight).filter_by(country_id=country.id).all()
+	highlights = session.query(Highlight).filter_by(country_id=country.id).order_by(Highlight.name).all()
 	return render_template('countryHighlights.html', countries=countries, highlights=highlights, country=country)
 	
 # Add new country
@@ -273,8 +273,8 @@ def deleteCountry(country_name):
 		
 # Perform checks to ensure country name integrity
 def addCountryConditions(name, edit):
-	exists = session.query(Country.id).filter_by(name=name).first()
-	if (exists is not None and not edit):
+	country = session.query(Country).filter_by(name=name).first()
+	if (country is not None and not edit):
 		return 'Country name already exists.'
 	elif (name == ''):
 		return 'Country name cannot be blank.'
@@ -282,7 +282,7 @@ def addCountryConditions(name, edit):
 		return 'You must login to edit a Country'
 	elif (login_session.get('id') is None):
 		return 'You must login to add a Country'
-	elif (edit and login_session.get('id') != exists.user.id):
+	elif (edit and login_session.get('id') != country.user.id):
 		return 'You do not have permission to delete this Country.'
 	else:
 		return ''
@@ -339,9 +339,9 @@ def addNewHighlight(country_name):
 
 # Perform checks to ensure highlight name integrity
 def addHighlightConditions(country, oldName, name, edit):
-	exists = session.query(Highlight).filter_by(country_id=country.id,
+	highlight = session.query(Highlight).filter_by(country_id=country.id,
 		name=oldName).first()
-	if (exists is not None and not edit):
+	if (highlight is not None and not edit):
 		return 'Highlight name already exists.'
 	elif (name == ''):
 		return 'Highlight name cannot be blank.'
@@ -349,7 +349,7 @@ def addHighlightConditions(country, oldName, name, edit):
 		return 'You must login to edit a Highlight'
 	elif (login_session.get('id') is None):
 		return 'You must login to add a Highlight'
-	elif (edit and login_session.get('id') != exists.user.id):
+	elif (edit and login_session.get('id') != highlight.user.id):
 		return 'You do not have permission to delete this Highlight.'
 	else:
 		return ''
@@ -364,16 +364,19 @@ def editHighlightDescription(country_name, highlight_name):
 	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 	if country is not None and highlight is not None:
 		if request.method == 'POST':
-			newName = request.form['name']
-			message = addHighlightConditions(country, highlight_name, newName, True)
-			if (message == ''):
-				highlight.name = request.form['name']
-				highlight.description = request.form['description']
-				session.add(highlight)
-				session.commit()
-				return redirect(url_for('highlightDescription', highlight_name=highlight.name, country_name=country.name))
+			if user_var.id == highlight.user.id:
+				newName = request.form['name']
+				message = addHighlightConditions(country, highlight_name, newName, True)
+				if (message == ''):
+					highlight.name = request.form['name']
+					highlight.description = request.form['description']
+					session.add(highlight)
+					session.commit()
+					return redirect(url_for('highlightDescription', highlight_name=highlight.name, country_name=country.name))
+				else:
+					return error(message)
 			else:
-				return error(message)
+				return error('You do not have permission to edit this Highlight.')
 		else:
 			countries = session.query(Country).order_by(Country.name).all()
 			return render_template('editHighlightDescription.html', countries=countries, highlight=highlight, country=country)
@@ -390,12 +393,9 @@ def deleteHighlightDescription(country_name, highlight_name):
 	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 	if country is not None and highlight is not None:
 		if request.method == 'POST':
-			if user_var == highlight.user.id:
+			if user_var.id == highlight.user.id:
 				session.delete(highlight)
 				session.commit()
-				count = session.query(Highlight).filter_by(country_id=country.id).count()
-				if count < 1 and user_var.id == country.user.id:
-					session.delete(country)
 				return redirect(url_for('countries'))
 			else:
 				return error('You do not have permission to delete this Highlight.')

@@ -5,9 +5,17 @@
 <div class='pane'>
 	<h1><a href="{{url_for('countryHighlights', country_name=country.name )}}">{{country.name}}</a> - {{highlight.name}}</h1>
 	<p>{{highlight.description}}</p>
+	
+	<hr>
+	
+	{% if 'username' in session and session['id'] == highlight.user.id %}
+	<div class="edit-highlight">
 	<a href="{{url_for('editHighlightDescription', 
-		country_name=country.name, highlight_name=highlight.name)}}">Edit</a>
+		country_name=country.name, highlight_name=highlight.name)}}">Edit Highlight</a>
+	<span>|</span>
 	<a href="{{url_for('deleteHighlightDescription', 
-		country_name=country.name, highlight_name=highlight.name)}}">Delete</a>
+		country_name=country.name, highlight_name=highlight.name)}}">Delete Highlight</a>
+	</div>
+	{% endif %}
 </div>
 {% endblock %} 

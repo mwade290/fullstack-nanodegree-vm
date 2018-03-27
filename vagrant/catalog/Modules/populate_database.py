@@ -43,7 +43,7 @@ highlight_var = Highlight(name="Queenstown",
 session.add(highlight_var)
 session.commit()
 
-user_var = User(username="Mark Wade 2", email="mwade290@gmail.com")
+user_var = User(username="Zeus", email="frozenzeus86@gmail.com")
 session.add(user_var)
 session.commit()
 

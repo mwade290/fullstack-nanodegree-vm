@@ -4,12 +4,13 @@
 {% block content %}
 <div class='pane'>
 	<h1>{{country.name}} - Highlights</h1>
-
-	<a href="{{url_for('addNewHighlight', country_name=country.name)}}">Add New</a>
-	<a href="{{url_for('editCountry', country_name=country.name)}}">Edit</a>
-	<a href="{{url_for('deleteCountry', country_name=country.name)}}">Delete</a>
-
-	<ol>
+	
+	<ul class="highlight-list">
+	{% if 'username' in session %}
+	<li><a class="highlight-add" href="{{url_for('addNewHighlight', 
+		country_name=country.name)}}">
+		Add Highlight</a></li>
+	{% endif %}
 	{% for highlight in highlights %}
 
 	<li><a href="{{url_for('highlightDescription', 
@@ -17,6 +18,16 @@
 		{{highlight.name}}</a></li>
 
 	{% endfor %}
-	</ol>
+	</ul>
+	
+	<hr>
+	
+	{% if 'username' in session and session['id'] == country.user.id %}
+	<div class="edit-country">
+	<a href="{{url_for('editCountry', country_name=country.name)}}">Edit Country</a>
+	<span>|</span>
+	<a href="{{url_for('deleteCountry', country_name=country.name)}}">Delete Country</a>
+	</div>
+	{% endif %}
 </div>
 {% endblock %} 
