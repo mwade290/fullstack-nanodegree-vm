@@ -66,3 +66,8 @@ body {
 	list-style: none;
 	padding-left: 0;
 }
+
+.highlight-image {
+	height: 250px;
+	width: 450px;
+}

@@ -36,7 +36,9 @@ class Highlight(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False, unique=True)
+    prologue = Column(String(convert_unicode=True), nullable=False)
     description = Column(String(convert_unicode=True), nullable=False)
+    img_url = Column(String(convert_unicode=True), nullable=True)
     country_id = Column(Integer, ForeignKey('country.id'))
     country = relationship(Country)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -47,7 +49,9 @@ class Highlight(Base):
         return {
             'id': self.id,
             'name': self.name,
+			'prologue': self.prologue,
             'description': self.description,
+			'img_url': self.img_url,
         }
 
 engine = create_engine('sqlite:///countries.db')
