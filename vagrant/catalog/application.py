@@ -176,6 +176,12 @@ def gdisconnect():
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
+# Show all users in serialised format
+@app.route('/users/JSON')
+def usersJSON():
+	users = session.query(User).order_by(User.username).all()
+	return jsonify(users=[u.serialize for u in users])
+		
 # Show all countries in serialised format
 @app.route('/JSON')
 @app.route('/countries/JSON')

@@ -36,7 +36,7 @@ session.commit()
 highlight_var = Highlight(name="Taupo", 
 				prologue="Home to a giant lake.",
 				description="Lake Taupo is the largest freshwater lake in Australasia and is roughly the size of Singapore. The lake is the crater of one of the largest volcanic eruptions of the last 5000 years. Lake Taupo is a staggering 159 metres deep. Skydiving is a popular activity in the Taupo area since Taupo has New Zealand's largest commercial skydive drop zone. Taupo is the skydiving capital of the world with more than 30,000 jumps a year.",
-				img_url="https://www.greatlaketaupo.com/media/2917321/Lake-Taupo-Roadtrip-Bully-Point-Bare-Kiwi-sml.DrnWmw.jpg",
+				img_url="/static/medium/taupo-460.jpg",
 				country=country_var, 
 				user=user_var)
 
@@ -46,7 +46,7 @@ session.commit()
 highlight_var = Highlight(name="Queenstown", 
 				prologue="Where boredom is a myth.",
 				description="Queenstown is as much a verb as a noun, a place of doing that likes to spruik itself as the 'adventure capital of the world'. It's famously the birthplace of bungy jumping, and the list of adventures you can throw yourself into here is encyclopedic - alpine heliskiing to ziplining. It's rare that a visitor leaves without having tried something that ups their heart rate, but to pigeonhole Queenstown as just a playground is to overlook its cosmopolitan dining and arts scene, its fine vineyards, and the diverse range of bars that can make evenings as fun-filled as the days.",
-				img_url="https://farm1.nzstatic.com/_proxy/imageproxy_1y/serve/skyline-queenstown-luge-panorama.webp?height=530&outputformat=webp&quality=80&source=3173308&transformationratio=1.3&transformationsystem=autoboxfit&width=940&securitytoken=479076C96A112A72B420499D2A9B65F4",
+				img_url="/static/medium/queenstown-460.jpg",
                 country=country_var, 
 				user=user_var)
 
@@ -62,7 +62,7 @@ session.commit()
 highlight_var = Highlight(name="Koh Tao", 
 				prologue="Diving paradise on turtle island.",
 				description="The island's natural beauty both above and below the water, with its stunning coral reefs and abundant marine life in clear, warm water, bring thousands of visitors here each year making it an unforgettable destination for divers, adventurers and travellers alike. This, combined with the relaxed atmosphere and life style, has been attracting people here for over 40 years and is now a warm second home for many.  Koh Tao has developed in many ways, and with its thriving diving industry, is now one of the leading centres for dive education in the world.",
-				img_url="https://media-cdn.tripadvisor.com/media/photo-o/01/09/9e/70/ko-tao.jpg",
+				img_url="/static/medium/koh-tao-460.jpg",
                 country=country_var, 
 				user=user_var2)
 

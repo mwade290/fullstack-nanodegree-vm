@@ -15,6 +15,14 @@ class User(Base):
 	username = Column(String(250), nullable=False)
 	email = Column(String(250), nullable=False)
 	picture = Column(String(250))
+	
+	@property
+	def serialize(self):
+		return {
+			'id': self.id,
+			'username': self.username,
+			'email': self.email,
+		}
 
 class Country(Base):
 	__tablename__ = 'country'

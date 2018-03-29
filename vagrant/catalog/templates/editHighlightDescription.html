@@ -6,7 +6,7 @@
 <form action= "{{url_for('editHighlightDescription', country_name=country.name, highlight_name=highlight.name)}}" method = 'POST'>
 <div class='pane'>
 	<input name='name' type='text' value='{{highlight.name}}'></input>
-
+	<input name='name' type='text' value='{{highlight.img_url}}'></input>
 	<textarea name='description' rows='5' cols='40'>{{highlight.description }}</textarea>
 	<input type='submit' value='Edit'>
 </div>
