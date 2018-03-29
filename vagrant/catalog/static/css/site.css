@@ -1,7 +1,6 @@
 body {
 	overflow-x: hidden;
 	padding-top: 75px;
-	margin: 0 auto;
 }
 
 img, embed, object, video {
@@ -61,10 +60,9 @@ img, embed, object, video {
 }
 
 .content-wrapper {
-	position: relative;
-/*  	left: 200px; */
+	position: absolute;
+ 	left: 200px;
 	padding: 10px 20px;
-	border: solid black 1px;
 }
 
 .latest-items {

@@ -4,6 +4,7 @@
 {% block content %}
 <div class='pane'>
 	<h1><a href="{{url_for('countryHighlights', country_name=country.name )}}">{{country.name}}</a> - {{highlight.name}}</h1>
+	<h3>{{highlight.prologue}}</h3>
 	<img class="img-fluid highlight-image" src="{{highlight.img_url}}">
 	<p>{{highlight.description}}</p>
 	

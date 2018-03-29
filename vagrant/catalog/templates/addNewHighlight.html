@@ -5,8 +5,18 @@
 <form action= "{{url_for('addNewHighlight', country_name=country.name)}}" method = 'POST'>
 <div class='pane'>
 	<h1>Add New Highlight</h1>
-	<input name='name' type='text'>
-	<textarea name='description' rows='5' cols='40'></textarea>
+	<div class="row">
+		<p class="col-sm-5">Highlight Name: </p>
+		<input class="col-sm-7" name='name' type='text'>
+	</div>
+	<div class="row">
+		<p class="col-sm-5">Highlight Prologue: </p>
+		<input class="col-sm-7" name='prologue' type='text'>
+	</div>
+	<div class="row">
+		<p class="col-sm-5">Highlight Description: </p>
+		<textarea class="col-sm-7" name='description' rows='5' cols='40'></textarea>
+	</div>
 	<input type='submit' value='Add'>
 </div>
 </form>
