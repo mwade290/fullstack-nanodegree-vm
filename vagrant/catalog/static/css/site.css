@@ -1,6 +1,11 @@
 body {
 	overflow-x: hidden;
 	padding-top: 75px;
+	background-color: #bfedef;
+}
+
+a {
+	color: #0f539c
 }
 
 img, embed, object, video {
@@ -8,7 +13,6 @@ img, embed, object, video {
 }
 
 .navbar {
-	width: 100%;
 	overflow: hidden;
 	height: 75px;
 }
@@ -19,19 +23,21 @@ img, embed, object, video {
 
 .sidebar-wrapper {
 	position: fixed;
+	height: 100%;
+	width: 200px;
 	top: 75px;
 	bottom: 0;
 	left: 0;
-	z-index: 1000;
-	overflow-y: auto;
-	background: #ddd;
+	z-index: 1;
+/* 	overflow-y: auto; */
+	background: #50a853;
 	border-right: 1px solid #eee;
 }
 
 .sidebar-nav {
 	position: relative;
-	min-width: 200px;
-	max-width: 200px;
+/* 	min-width: 200px;
+	max-width: 200px; */
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -41,6 +47,7 @@ img, embed, object, video {
 	height: 65px;
 	font-size: 1.5em;
 	line-height: 60px;
+	font-weight: 700;
 }
 
 .sidebar-nav li {
@@ -51,18 +58,20 @@ img, embed, object, video {
 .sidebar-nav li a {
 	display: block;
 	text-decoration: none;
+	font-weight: 700;
 }
 
 .sidebar-add, .highlight-add {
 	display: block;
-	color: red;
+	color: #ca0c0c;
 	font-weight: bold;
 }
 
 .content-wrapper {
-	position: absolute;
- 	left: 200px;
+	height: 100%;
+ 	margin-left: 200px;
 	padding: 10px 20px;
+	background-color: #bfedef;
 }
 
 .latest-items {
@@ -78,6 +87,15 @@ img, embed, object, video {
 	padding-left: 0;
 }
 
-.highlight-image {
+.edit-highlight-row {
+	margin-bottom: 5px;
+}
 
+.edit-highlight-label {
+	font-weight: 700;
+	vertical-align: bottom;
+}
+
+.edit-highlight-button {
+	padding-right: 0;
 }

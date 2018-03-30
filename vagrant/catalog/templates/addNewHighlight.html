@@ -5,20 +5,24 @@
 <form action= "{{url_for('addNewHighlight', country_name=country.name)}}" method = 'POST'>
 <div class='pane'>
 	<h1>Add New Highlight</h1>
-	<div class="row">
-		<p class="col-sm-5">Highlight Name: </p>
-		<input class="col-sm-7" name='name' type='text'>
+	<div class="row edit-highlight-row">
+		<p class="col-sm-2 edit-highlight-label">Name: </p>
+		<input class="col-sm-8" name='name' type='text'>
+	</div>
+	<div class="row edit-highlight-row">
+		<p class="col-sm-2 edit-highlight-label">Prologue: </p>
+		<input class="col-sm-8" name='prologue' type='text'>
+	</div>
+	<div class="row edit-highlight-row">
+		<p class="col-sm-2 edit-highlight-label">Description: </p>
+		<textarea class="col-sm-8" name='description' rows='5' cols='40'></textarea>
 	</div>
 	<div class="row">
-		<p class="col-sm-5">Highlight Prologue: </p>
-		<input class="col-sm-7" name='prologue' type='text'>
+		<div class="col-sm-10 edit-highlight-button">
+			<input class="btn btn-primary float-right" type="submit" value="Add">
+			<a class="btn btn-default float-right" role="button" href="{{url_for('countryHighlights', country_name=country.name)}}">Cancel</a>
+		</div>
 	</div>
-	<div class="row">
-		<p class="col-sm-5">Highlight Description: </p>
-		<textarea class="col-sm-7" name='description' rows='5' cols='40'></textarea>
-	</div>
-	<input type='submit' value='Add'>
 </div>
 </form>
-<a href= "{{url_for('countryHighlights', country_name=country.name)}}">Cancel</a>
 {% endblock %} 

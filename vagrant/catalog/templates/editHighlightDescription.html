@@ -5,20 +5,26 @@
 
 <form action= "{{url_for('editHighlightDescription', country_name=country.name, highlight_name=highlight.name)}}" method = 'POST'>
 <div class='pane'>
-	<div class="row">
-		<p class="col-sm-5">Highlight Name: </p>
-		<input class="col-sm-7" name='name' type='text' value='{{highlight.name}}'>
+	<h1>Editing {{country.name}} - {{highlight.name}}</h1>
+	<div class="row edit-highlight-row">
+		<p class="col-sm-2 edit-highlight-label">Name: </p>
+		<input class="col-sm-8" name='name' type='text' value='{{highlight.name}}'>
+	</div>
+	<div class="row edit-highlight-row">
+		<p class="col-sm-2 edit-highlight-label">Prologue: </p>
+		<input class="col-sm-8" name='prologue' type='text' value='{{highlight.prologue}}'>
+	</div>
+	<div class="row edit-highlight-row">
+		<p class="col-sm-2 edit-highlight-label">Description: </p>
+		<textarea class="col-sm-8" name='description' rows='5' cols='40'>{{highlight.description}}</textarea>
 	</div>
 	<div class="row">
-		<p class="col-sm-5">Highlight Prologue: </p>
-		<input class="col-sm-7" name='prologue' type='text' value='{{highlight.prologue}}'>
+		<div class="col-sm-10 edit-highlight-button">
+			<input class="btn btn-primary float-right" type="submit" value="Edit">
+			<a class="btn btn-default float-right" role="button" href="{{url_for('highlightDescription', country_name=country.name, highlight_name=highlight.name)}}">Cancel</a>
+		</div>
 	</div>
-	<div class="row">
-		<p class="col-sm-5">Highlight Description: </p>
-		<textarea class="col-sm-7" name='description' rows='5' cols='40'>{{highlight.description}}</textarea>
-	</div>
-	<input type='submit' value='Edit'>
 </div>
 </form>
-<a href= "{{url_for('highlightDescription', country_name=country.name, highlight_name=highlight.name)}}">Cancel</a>
+
 {% endblock %} 

@@ -329,6 +329,7 @@ def addNewHighlight(country_name):
 			if (message == ''):
 				user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 				highlight = Highlight(name=newName,
+					prologue=request.form['prologue'],
 					description=request.form['description'],
 					country_id=country.id,
 					user=user_var)
