@@ -5,24 +5,29 @@
 <form action= "{{url_for('addNewHighlight', country_name=country.name)}}" method = 'POST'>
 <div class='pane'>
 	<h1>Add New Highlight</h1>
-	<div class="row edit-highlight-row">
+	
+	<div class="row top-buffer">
 		<p class="col-sm-2 edit-highlight-label">Name: </p>
-		<input class="col-sm-8" name='name' type='text'>
+		<input class="col-sm-8 form-control" name='name' type='text'>
 	</div>
-	<div class="row edit-highlight-row">
+	<div class="row top-buffer">
 		<p class="col-sm-2 edit-highlight-label">Prologue: </p>
-		<input class="col-sm-8" name='prologue' type='text'>
+		<input class="col-sm-8 form-control" name='prologue' type='text'>
 	</div>
-	<div class="row edit-highlight-row">
+	<div class="row top-buffer">
 		<p class="col-sm-2 edit-highlight-label">Description: </p>
-		<textarea class="col-sm-8" name='description' rows='5' cols='40'></textarea>
+		<textarea class="col-sm-8 form-control" name='description' rows='5' cols='40'></textarea>
 	</div>
-	<div class="row">
+	<div class="row top-buffer">
 		<div class="col-sm-10 edit-highlight-button">
 			<input class="btn btn-primary float-right" type="submit" value="Add">
 			<a class="btn btn-default float-right" role="button" href="{{url_for('countryHighlights', country_name=country.name)}}">Cancel</a>
 		</div>
 	</div>
+	
+	<hr>
+	
+	<p>Please note - uploading images is not supported at present, please <a class="contact" href="Mailto:mwade290@gmail.com">contact</a> the developer to add an image to a highlight.</p>
 </div>
 </form>
 {% endblock %} 

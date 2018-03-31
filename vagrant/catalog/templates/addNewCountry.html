@@ -4,12 +4,19 @@
 {% block content %}
 <form action= "{{url_for('addNewCountry')}}" method = 'POST'>
 <div class='pane'>
-<h1>Add New Country</h1>
+	<h1>Add New Country</h1>
 
-<input name='name' type='text'>
-<input type='submit' value='Add'>
-
+	<div class="row top-buffer">
+		<div class="col-sm-6">
+			<input class="form-control" name='name' type='text'>
+		</div>
+	</div>
+	<div class="row top-buffer">
+		<div class="col-sm-6">
+			<input class="btn btn-primary float-right" type="submit" value="Add">
+			<a class="btn btn-default float-right" role="button" href="{{url_for('countries')}}">Cancel</a>
+		</div>
+	</div>
 </div>
 </form>
-<a href="{{url_for('countries')}}">Cancel</a>
 {% endblock %} 

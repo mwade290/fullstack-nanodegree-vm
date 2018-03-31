@@ -1,20 +1,26 @@
 body {
 	overflow-x: hidden;
 	padding-top: 75px;
-	background-color: #bfedef;
+	background-color: #f7fcff;
 }
 
 a {
-	color: #0f539c
+	color: #636b46;
 }
 
-img, embed, object, video {
-	max-width: 100%;
+p {
+	color: #000;
+	text-align: justify;
+}
+
+.container {
+	margin-left: 0;
+	padding-left: 0;
 }
 
 .navbar {
-	overflow: hidden;
 	height: 75px;
+	background-color: #636b46;
 }
 
 .navbar-brand {
@@ -29,66 +35,49 @@ img, embed, object, video {
 	bottom: 0;
 	left: 0;
 	z-index: 1;
-/* 	overflow-y: auto; */
-	background: #50a853;
+	background: #efd9c1;
 	border-right: 1px solid #eee;
 }
 
 .sidebar-nav {
 	position: relative;
-/* 	min-width: 200px;
-	max-width: 200px; */
 	margin: 0;
 	padding: 0;
 	list-style: none;
+	font-weight: 700;
 }
 
 .sidebar-nav>.sidebar-brand {
-	height: 65px;
 	font-size: 1.5em;
 	line-height: 60px;
-	font-weight: 700;
 }
 
 .sidebar-nav li {
 	text-indent: 20px;
 	line-height: 30px;
-}
-
-.sidebar-nav li a {
 	display: block;
 	text-decoration: none;
-	font-weight: 700;
 }
 
 .sidebar-add, .highlight-add {
-	display: block;
-	color: #ca0c0c;
-	font-weight: bold;
+	color: #cd5360;
+	font-weight: 700;
 }
 
 .content-wrapper {
 	height: 100%;
  	margin-left: 200px;
 	padding: 10px 20px;
-	background-color: #bfedef;
+	color: #c0b283;
 }
 
 .latest-items {
 	list-style: none;
 }
 
-.edit-country, .edit-highlight {
-	padding-bottom: 10px;
-}
-
 .highlight-list {
 	list-style: none;
 	padding-left: 0;
-}
-
-.edit-highlight-row {
-	margin-bottom: 5px;
 }
 
 .edit-highlight-label {
@@ -98,4 +87,14 @@ img, embed, object, video {
 
 .edit-highlight-button {
 	padding-right: 0;
+}
+
+.top-buffer {
+	margin-top: 10px;
+}
+
+.contact {
+	color: blue;
+	text-decoration: underline;
+	font-weight: 700;
 }

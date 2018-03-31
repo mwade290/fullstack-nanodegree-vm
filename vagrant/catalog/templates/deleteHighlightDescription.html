@@ -4,10 +4,20 @@
 {% block content %}
 <form action= "{{url_for('deleteHighlightDescription', country_name=country.name, highlight_name=highlight.name)}}" method = 'POST'>
 <div class='pane'>
-	<h3>Are you sure you want to delete {{country.name}} - {{highlight.name}}</h3>
-	<p>{{highlight.description}}</p>
-	<input type='submit' value='Delete'>
+
+	<div class="row top-buffer">
+		<div class="col-sm-12">
+			<h3>Are you sure you want to delete '{{highlight.name}}' from {{country.name}}?</h3>
+		</div>
+	</div>
+	
+	<div class="row top-buffer">
+		<div class="col-sm-12">
+			<a class="btn btn-default float-left" role="button" href="{{url_for('highlightDescription', 
+				country_name=country.name, highlight_name=highlight.name)}}">Cancel</a>
+			<input class="btn btn-primary float-left" type="submit" value="Delete">
+		</div>
+	</div>
 </div>
 </form>
-<a href= "{{url_for('highlightDescription', country_name=country.name, highlight_name=highlight.name)}}">Cancel</a>
 {% endblock %} 

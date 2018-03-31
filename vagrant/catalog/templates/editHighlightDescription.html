@@ -6,19 +6,20 @@
 <form action= "{{url_for('editHighlightDescription', country_name=country.name, highlight_name=highlight.name)}}" method = 'POST'>
 <div class='pane'>
 	<h1>Editing {{country.name}} - {{highlight.name}}</h1>
-	<div class="row edit-highlight-row">
+	
+	<div class="row top-buffer">
 		<p class="col-sm-2 edit-highlight-label">Name: </p>
-		<input class="col-sm-8" name='name' type='text' value='{{highlight.name}}'>
+		<input class="col-sm-8 form-control" name='name' type='text' value='{{highlight.name}}'>
 	</div>
-	<div class="row edit-highlight-row">
+	<div class="row top-buffer">
 		<p class="col-sm-2 edit-highlight-label">Prologue: </p>
-		<input class="col-sm-8" name='prologue' type='text' value='{{highlight.prologue}}'>
+		<input class="col-sm-8 form-control" name='prologue' type='text' value='{{highlight.prologue}}'>
 	</div>
-	<div class="row edit-highlight-row">
+	<div class="row top-buffer">
 		<p class="col-sm-2 edit-highlight-label">Description: </p>
-		<textarea class="col-sm-8" name='description' rows='5' cols='40'>{{highlight.description}}</textarea>
+		<textarea class="col-sm-8 form-control" name='description' rows='5' cols='40'>{{highlight.description}}</textarea>
 	</div>
-	<div class="row">
+	<div class="row top-buffer">
 		<div class="col-sm-10 edit-highlight-button">
 			<input class="btn btn-primary float-right" type="submit" value="Edit">
 			<a class="btn btn-default float-right" role="button" href="{{url_for('highlightDescription', country_name=country.name, highlight_name=highlight.name)}}">Cancel</a>

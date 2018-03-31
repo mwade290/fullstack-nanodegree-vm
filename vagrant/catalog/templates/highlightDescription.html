@@ -3,21 +3,42 @@
 
 {% block content %}
 <div class='pane'>
-	<h1><a href="{{url_for('countryHighlights', country_name=country.name )}}">{{country.name}}</a> - {{highlight.name}}</h1>
-	<h3>{{highlight.prologue}}</h3>
-	<img class="img-fluid highlight-image" src="{{highlight.img_url}}" alt="Please contact the web developer to add a picture.">
-	<p>{{highlight.description}}</p>
+
+	<div class="row">
+		<div class="col-sm-12">
+			<h1><a href="{{url_for('countryHighlights', country_name=country.name )}}">{{country.name}}</a> - {{highlight.name}}</h1>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-12">
+			<h3 class="top-buffer">{{highlight.prologue}}</h3>
+		</div>
+	</div>
+	
+	<div class="row top-buffer">
+		<div class="col-sm-12">
+			<img class="img-fluid highlight-image" src="{{highlight.img_url}}" alt="Please contact the web developer to add a picture.">
+		</div>
+	</div>
+	
+	<div class="row top-buffer">
+		<div class="col-sm-8">
+			<p>{{highlight.description}}</p>
+		</div>
+	</div>
 	
 	<hr>
 	
 	{% if 'username' in session and session['id'] == highlight.user.id %}
 	<div class="edit-highlight">
-	<a href="{{url_for('editHighlightDescription', 
-		country_name=country.name, highlight_name=highlight.name)}}">Edit Highlight</a>
-	<span>|</span>
-	<a href="{{url_for('deleteHighlightDescription', 
-		country_name=country.name, highlight_name=highlight.name)}}">Delete Highlight</a>
+		<a href="{{url_for('editHighlightDescription', 
+			country_name=country.name, highlight_name=highlight.name)}}">Edit Highlight</a>
+		<span>|</span>
+		<a href="{{url_for('deleteHighlightDescription', 
+			country_name=country.name, highlight_name=highlight.name)}}">Delete Highlight</a>
 	</div>
 	{% endif %}
+	
 </div>
 {% endblock %} 

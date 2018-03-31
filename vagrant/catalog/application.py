@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, make_response, flash
+from database_setup import Base, User, Country, Highlight
+from flask import Flask, render_template, request
+from flask import redirect, jsonify, url_for, make_response
 from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -10,13 +12,12 @@ import string
 import httplib2
 import json
 import requests
-sys.path.insert(0, 'Modules')
-from database_setup import Base, User, Country, Highlight
 
 app = Flask(__name__)
-app.secret_key = 'super_secret_key'
+app.secret_key = '\xc1\xfau5\xf1\xfc?\x18R\xc0\xb2\xcc\xee\xc7K'
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = 
+	json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog App"
 
 engine = create_engine('sqlite:///countries.db')
@@ -33,7 +34,7 @@ def showLogin():
 	login_session['state'] = state
 	countries = session.query(Country).order_by(Country.name).all()
 	return render_template('login.html', countries=countries, STATE=state)
-
+	
 # Logout
 @app.route('/logout')
 def disconnect():
@@ -44,19 +45,10 @@ def disconnect():
 	# del login_session['picture']
 	# del login_session['id']
 	if 'username' in login_session:
-		gdisconnect()
-		flash("Log out successful")
+		countries = session.query(Country).order_by(Country.name).all()
+		return render_template('logout.html', countries=countries)
 	else:
-		flash("You were not logged in.")
-	return redirect(url_for('countries'))
-
-def createUser(login_session):
-	newUser = User(name=login_session['username'], email=login_session[
-		'email'], picture=login_session['picture'])
-	session.add(newUser)
-	session.commit()
-	user = session.query(User).filter_by(email=login_session['email']).first()
-	return user.id
+		return error('No user logged in')
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -106,8 +98,7 @@ def gconnect():
 	stored_access_token = login_session.get('access_token')
 	stored_gplus_id = login_session.get('gplus_id')
 	if stored_access_token is not None and gplus_id == stored_gplus_id:
-		response = make_response(json.dumps('Current user is already connected.'),
-								 200)
+		response = make_response(json.dumps('Current user is already connected.'), 200)
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
@@ -138,10 +129,17 @@ def gconnect():
 	output += '!</h1>'
 	output += '<img src="'
 	output += login_session['picture']
-	output += ' " style = "width: 300px; height: 300px;border-radius:150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-	flash("you are now logged in as %s" % login_session['username'])
+	output += ' " style = "width: 200px; height: 200px;border-radius:100px;-webkit-border-radius: 100px;-moz-border-radius: 100px;"> '
 	print("done!")
 	return output
+
+# Add new user to database
+def createUser(login_session):
+	newUser = User(username=login_session['username'], email=login_session[
+		'email'], picture=login_session['picture'])
+	session.add(newUser)
+	session.commit()
+	return newUser.id
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
 @app.route('/gdisconnect', methods=['POST'])
@@ -167,20 +165,13 @@ def gdisconnect():
 		del login_session['email']
 		del login_session['picture']
 		del login_session['id']
-		response = make_response(json.dumps('Successfully disconnected.'), 200)
+		response = make_response(json.dumps('Logout Successful!'), 200)
 		response.headers['Content-Type'] = 'application/json'
-		flash("Successfully disconnected.")
 		return response
 	else:
 		response = make_response(json.dumps('Failed to revoke token for given user. %s' % result['status'], 400))
 		response.headers['Content-Type'] = 'application/json'
 		return response
-
-# Show all users in serialised format
-@app.route('/users/JSON')
-def usersJSON():
-	users = session.query(User).order_by(User.username).all()
-	return jsonify(users=[u.serialize for u in users])
 		
 # Show all countries in serialised format
 @app.route('/JSON')
@@ -201,6 +192,8 @@ def countries():
 @app.route('/countries/<country_name>/highlights/JSON')
 def countryHighlightsJSON(country_name):
 	country = session.query(Country).filter_by(name=country_name).first()
+	if country is None:
+		return error('Could not find Country: "%s"' % country_name)
 	highlights = session.query(Highlight).filter_by(country_id=country.id).all()
 	return jsonify(highlights=[h.serialize for h in highlights])
 
@@ -209,16 +202,17 @@ def countryHighlightsJSON(country_name):
 def countryHighlights(country_name):
 	countries = session.query(Country).order_by(Country.name).all()
 	country = session.query(Country).filter_by(name=country_name).first()
+	if country is None:
+		return error('Could not find Country: "%s"' % country_name)
 	highlights = session.query(Highlight).filter_by(country_id=country.id).order_by(Highlight.name).all()
 	return render_template('countryHighlights.html', countries=countries, highlights=highlights, country=country)
 	
 # Add new country
-@app.route('/countries/add', 
-		   methods=['GET', 'POST'])
+@app.route('/countries/add', methods=['GET', 'POST'])
 def addNewCountry():
 	if request.method == 'POST':
 		newName = request.form['name']
-		message = addCountryConditions(newName, False)
+		message = countryConditions(newName, '', False)
 		if (message == ''):
 			user_var = session.query(User).filter_by(id=login_session['id']).first()
 			country = Country(name=newName, user=user_var)
@@ -232,15 +226,13 @@ def addNewCountry():
 		return render_template('addNewCountry.html', countries=countries)
 		
 # Edit Country name
-@app.route('/countries/<country_name>/edit',
-		   methods=['GET', 'POST'])
+@app.route('/countries/<country_name>/edit', methods=['GET', 'POST'])
 def editCountry(country_name):
 	country = session.query(Country).filter_by(name=country_name).first()
-	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 	if country is not None:
 		if request.method == 'POST':
 			newName = request.form['name']
-			message = addCountryConditions(country.name, True)
+			message = countryConditions(country_name, newName, True)
 			if (message == ''):
 				country.name = newName
 				session.add(country)
@@ -252,16 +244,16 @@ def editCountry(country_name):
 			countries = session.query(Country).order_by(Country.name).all()
 			return render_template('editCountry.html', countries=countries, country=country)
 	else:
-		return error('Unable to find entry in database.')
+		return error('Unable to find Country in database.')
 		
 # Delete country
-@app.route('/countries/<country_name>/delete', 
-		   methods=['GET', 'POST'])
+@app.route('/countries/<country_name>/delete', methods=['GET', 'POST'])
 def deleteCountry(country_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 	if country is not None:
 		if request.method == 'POST':
+			# Can only delete if the original creator of the country
 			if user_var is not None and user_var.id == country.user.id:
 				highlights = session.query(Highlight).filter_by(country_id=country.id).all()
 				for highlight in highlights:
@@ -275,23 +267,38 @@ def deleteCountry(country_name):
 			countries = session.query(Country).order_by(Country.name).all()
 			return render_template('deleteCountry.html', countries=countries, country=country)
 	else:
-		return error('Unable to find entry in database.')
+		return error('Unable to find Country in database.')
 		
 # Perform checks to ensure country name integrity
-def addCountryConditions(name, edit):
+def countryConditions(name, newName, edit):
 	country = session.query(Country).filter_by(name=name).first()
-	if (country is not None and not edit):
-		return 'Country name already exists.'
-	elif (name == ''):
-		return 'Country name cannot be blank.'
-	elif (edit and login_session.get('id') is None):
-		return 'You must login to edit a Country'
-	elif (login_session.get('id') is None):
-		return 'You must login to add a Country'
-	elif (edit and login_session.get('id') != country.user.id):
-		return 'You do not have permission to delete this Country.'
+	edit_country = session.query(Country).filter_by(name=newName).first()
+	
+	# Adding new country
+	if not edit:
+		if (country is not None):
+			return 'Country name already exists.'
+		elif (name == ''):
+			return 'Country name cannot be blank.'
+		elif (login_session.get('id') is None):
+			return 'You must login to add a Country'
+		else:
+			return ''
+	
+	# Editing existing country
 	else:
-		return ''
+		if (country is None):
+			return 'Cannot find Country: "%s"' % name
+		elif (login_session.get('id') is None):
+			return 'You must login to edit a Country'
+		elif (newName == ''):
+			return 'Country name cannot be blank.'
+		elif (edit_country is not None and country.id != edit_country.id):
+				return 'Country name already exists.'
+		elif (login_session.get('id') != country.user.id):
+			return 'You do not have permission to edit this Country.'
+		else:
+			return ''
 	
 # Show country highlight description in serialised format
 @app.route('/countries/<country_name>/highlights/<highlight_name>/description/JSON')
@@ -303,29 +310,30 @@ def highlightDescriptionJSON(country_name, highlight_name):
 		countries = session.query(Country).order_by(Country.name).all()
 		return jsonify(highlight=highlight.serialize)
 	else:
-		return error('Unable to find entry in database.')
+		return error('Unable to find Highlight in database.')
 
 # Show description for highlight
 @app.route('/countries/<country_name>/highlights/<highlight_name>/description')
 def highlightDescription(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
+	if country is None:
+		return error('Unable to find Country "%s" in database.' % country_name)
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
 		name=highlight_name).first()
-	if country > 0 and highlight > 0:
+	if highlight is not None:
 		countries = session.query(Country).order_by(Country.name).all()
 		return render_template('highlightDescription.html', countries=countries, highlight=highlight, country=country)
 	else:
 		return error('Unable to find entry in database.')
 		
 # Add new highlight
-@app.route('/countries/<country_name>/highlights/add', 
-		   methods=['GET', 'POST'])
+@app.route('/countries/<country_name>/highlights/add', methods=['GET', 'POST'])
 def addNewHighlight(country_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	if country is not None:
 		if request.method == 'POST':
 			newName = request.form['name']
-			message = addHighlightConditions(country, '', newName, False)
+			message = highlightConditions(country, newName, '', False)
 			if (message == ''):
 				user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 				highlight = Highlight(name=newName,
@@ -343,23 +351,6 @@ def addNewHighlight(country_name):
 			return render_template('addNewHighlight.html', countries=countries, country=country)
 	else:
 		return error('Unable to find Country in database.')
-
-# Perform checks to ensure highlight name integrity
-def addHighlightConditions(country, oldName, name, edit):
-	highlight = session.query(Highlight).filter_by(country_id=country.id,
-		name=oldName).first()
-	if (highlight is not None and not edit):
-		return 'Highlight name already exists.'
-	elif (name == ''):
-		return 'Highlight name cannot be blank.'
-	elif (edit and login_session.get('id') is None):
-		return 'You must login to edit a Highlight'
-	elif (login_session.get('id') is None):
-		return 'You must login to add a Highlight'
-	elif (edit and login_session.get('id') != highlight.user.id):
-		return 'You do not have permission to delete this Highlight.'
-	else:
-		return ''
 		
 # Edit highlight description
 @app.route('/countries/<country_name>/highlights/<highlight_name>/description/edit',
@@ -368,27 +359,57 @@ def editHighlightDescription(country_name, highlight_name):
 	country = session.query(Country).filter_by(name=country_name).first()
 	highlight = session.query(Highlight).filter_by(country_id=country.id,
 		name=highlight_name).first()
-	user_var = session.query(User).filter_by(id=login_session.get('id')).first()
 	if country is not None and highlight is not None:
 		if request.method == 'POST':
-			if user_var.id == highlight.user.id:
-				newName = request.form['name']
-				message = addHighlightConditions(country, highlight_name, newName, True)
-				if (message == ''):
-					highlight.name = request.form['name']
-					highlight.description = request.form['description']
-					session.add(highlight)
-					session.commit()
-					return redirect(url_for('highlightDescription', highlight_name=highlight.name, country_name=country.name))
-				else:
-					return error(message)
+			newName = request.form['name']
+			message = highlightConditions(country, highlight.name, newName, True)
+			if (message == ''):
+				highlight.name = request.form['name']
+				highlight.prologue=request.form['prologue']
+				highlight.description = request.form['description']
+				session.add(highlight)
+				session.commit()
+				return redirect(url_for('highlightDescription', highlight_name=highlight.name, country_name=country.name))
 			else:
-				return error('You do not have permission to edit this Highlight.')
+				return error(message)
 		else:
 			countries = session.query(Country).order_by(Country.name).all()
 			return render_template('editHighlightDescription.html', countries=countries, highlight=highlight, country=country)
 	else:
 		return error('Unable to find entry in database.')
+		
+# Perform checks to ensure highlight name integrity
+def highlightConditions(country, name, newName, edit):
+	highlight = session.query(Highlight).filter_by(country_id=country.id,
+		name=name).first()
+	edit_highlight = session.query(Highlight).filter_by(country_id=country.id,
+		name=newName).first()
+	
+	# Adding new highlight
+	if not edit:
+		if (highlight is not None):
+			return 'Highlight name already exists.'
+		elif (name == ''):
+			return 'Highlight name cannot be blank.'
+		elif (login_session.get('id') is None):
+			return 'You must login to add a Highlight'
+		else:
+			return ''
+	
+	# Editing existing highlight
+	else:
+		if (highlight is None):
+			return 'Cannot find Highlight: "%s" in Country: "%s"' % name, country.name
+		elif (login_session.get('id') is None):
+			return 'You must login to edit a Highlight'
+		elif (newName == ''):
+			return 'Highlight name cannot be blank.'
+		elif (edit_highlight is not None and highlight.id != edit_highlight.id):
+				return 'Highlight name already exists.'
+		elif (login_session.get('id') != highlight.user.id):
+			return 'You do not have permission to edit this Highlight.'
+		else:
+			return ''
 		
 # Delete highlight description
 @app.route('/countries/<country_name>/highlights/<highlight_name>/description/delete',
@@ -412,6 +433,7 @@ def deleteHighlightDescription(country_name, highlight_name):
 	else:
 		return error('Unable to find entry in database.')
 
+# Display error page with message
 @app.route('/error')		
 def error(message):
 	countries = session.query(Country).order_by(Country.name).all()

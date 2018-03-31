@@ -5,26 +5,14 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Country, Highlight
 
 engine = create_engine('sqlite:///countries.db')
-# Bind the engine to the metadata of the Base class so that the
-# declaratives can be accessed through a DBSession instance
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
-# A DBSession() instance establishes all conversations with the database
-# and represents a "staging zone" for all the objects loaded into the
-# database session object. Any change made against the objects in the
-# session won't be persisted into the database until you call
-# session.commit(). If you're not happy about the changes, you can
-# revert all of them back to the last commit by calling
-# session.rollback()
 session = DBSession()
 
+# Add user
 user_var = User(username="Mark Wade", email="mwade290@gmail.com")
 session.add(user_var)
-session.commit()
-
-user_var2 = User(username="Zeus", email="frozenzeus86@gmail.com")
-session.add(user_var2)
 session.commit()
 
 # New Zealand
@@ -54,7 +42,7 @@ session.add(highlight_var)
 session.commit()
 
 # Thailand
-country_var = Country(name="Thailand", user=user_var2)
+country_var = Country(name="Thailand", user=user_var)
 
 session.add(country_var)
 session.commit()
@@ -64,7 +52,7 @@ highlight_var = Highlight(name="Koh Tao",
 				description="The island's natural beauty both above and below the water, with its stunning coral reefs and abundant marine life in clear, warm water, bring thousands of visitors here each year making it an unforgettable destination for divers, adventurers and travellers alike. This, combined with the relaxed atmosphere and life style, has been attracting people here for over 40 years and is now a warm second home for many.  Koh Tao has developed in many ways, and with its thriving diving industry, is now one of the leading centres for dive education in the world.",
 				img_url="/static/medium/koh-tao-460.jpg",
                 country=country_var, 
-				user=user_var2)
+				user=user_var)
 
 session.add(highlight_var)
 session.commit()

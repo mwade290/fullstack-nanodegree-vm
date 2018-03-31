@@ -13,22 +13,14 @@ class User(Base):
 
 	id = Column(Integer, primary_key=True)
 	username = Column(String(250), nullable=False)
-	email = Column(String(250), nullable=False)
+	email = Column(String(250), nullable=False, unique=True)
 	picture = Column(String(250))
-	
-	@property
-	def serialize(self):
-		return {
-			'id': self.id,
-			'username': self.username,
-			'email': self.email,
-		}
 
 class Country(Base):
 	__tablename__ = 'country'
 
 	id = Column(Integer, primary_key=True)
-	name = Column(String(50), nullable=False)
+	name = Column(String(50), nullable=False, unique=True)
 	user_id = Column(Integer, ForeignKey('user.id'))
 	user = relationship(User)
 
