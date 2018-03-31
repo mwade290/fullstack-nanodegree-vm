@@ -5,9 +5,13 @@ Displays a catalog of country highlights using Flask and SQLAlchemy in Python.
 # Install
 
 Python (v3.5+)
+
 Python libraries (see pg_config.sh)
+
 VirtualBox (https://www.virtualbox.org/)
+
 Vagrant (https://www.vagrantup.com/)
+
 Flask (http://flask.pocoo.org/)
 
 # Usage
