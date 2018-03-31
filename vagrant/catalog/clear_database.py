@@ -9,9 +9,9 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 try:
-	session.query(User).delete()
-	session.query(Country).delete()
-	session.query(Highlight).delete()
-	session.commit()
-except:
-	session.rollback()
+    session.query(User).delete()
+    session.query(Country).delete()
+    session.query(Highlight).delete()
+    session.commit()
+except BaseException:
+    session.rollback()
